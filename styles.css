@@ -1,0 +1,4 @@
+/* Smooth transition when color is applied */
+[componentkey^="job-card-component-ref-"] {
+  transition: border-left 0.3s ease, background-color 0.3s ease !important;
+}

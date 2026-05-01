@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Job Tracker</title>
+  <link rel="stylesheet" href="popup.css" />
+</head>
+<body>
+  <header>
+    <div class="header-left">
+      <img src="../icons/icon48.png" class="logo" alt="JobTint" />
+      <h1>Job Tracker</h1>
+      <span id="count-badge" class="badge">0</span>
+    </div>
+    <button id="export-btn" class="export-btn">Export CSV</button>
+  </header>
+
+  <div id="empty-state" class="empty-state hidden">
+    <p>No jobs tracked yet.</p>
+    <p class="hint">Browse LinkedIn jobs to get started.</p>
+  </div>
+
+  <div id="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Company</th>
+          <th>Role</th>
+          <th>Date</th>
+          <th>Status</th>
+          <th>Mode</th>
+          <th>Notes</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody id="jobs-body"></tbody>
+    </table>
+  </div>
+
+  <footer>LinkedIn Job Tracker</footer>
+
+  <script src="popup.js"></script>
+</body>
+</html>
