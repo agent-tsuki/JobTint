@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "JobTint",
-  "version": "1.13",
+  "version": "1.14",
   "description": "Color-codes LinkedIn job listings by application status. Spot applied, new jobs instantly, no more re-applying by accident.",
   "permissions": ["storage"],
   "action": {
