@@ -1,7 +1,10 @@
-import zipfile, os
+import zipfile, os, json
+
+with open("manifest.json") as f:
+    version = json.load(f)["version"]
 
 os.makedirs("dist", exist_ok=True)
-zip_path = "dist/jobtint-v1.13.zip"
+zip_path = f"dist/jobtint-v{version}.zip"
 
 with zipfile.ZipFile(zip_path, "w", zipfile.ZIP_DEFLATED) as z:
     for f in ["manifest.json", "content.js", "styles.css"]:
