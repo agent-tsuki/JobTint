@@ -211,11 +211,83 @@ function addUndoButton() {
 }
 
 // --------------------------------------------------
+// Home Page Card Processing (linkedin.com/jobs/)
+// Jobs here are <a href="...?currentJobId=ID"> links, not component-key divs.
+// We can only color from storage — no apply buttons are visible on this page.
+// --------------------------------------------------
+
+function processHomeCards() {
+  if (!isExtensionAlive()) return;
+
+  const seen = new Map(); // jobId → element to color (inner div of the link)
+  document.querySelectorAll('a[href*="currentJobId="]').forEach((link) => {
+    try {
+      const jobId = new URL(link.href).searchParams.get("currentJobId");
+      if (!jobId || seen.has(jobId)) return;
+      // Color the first child div so we get a proper block box for border/bg
+      const el = link.querySelector(":scope > div") || link;
+      seen.set(jobId, el);
+    } catch { /* malformed href — skip */ }
+  });
+
+  if (!seen.size) return;
+
+  const keys = Array.from(seen.keys()).map((id) => `jt_${id}`);
+  safeStorageGet(keys, (result) => {
+    seen.forEach((el, jobId) => {
+      const stored = result[`jt_${jobId}`];
+      if (stored) colorCard(el, stored);
+    });
+  });
+}
+
+// --------------------------------------------------
+// List Panel Card Processing (job search results left panel)
+// Cards here are <div data-job-id="..."> elements.
+// --------------------------------------------------
+
+function processListCards() {
+  if (!isExtensionAlive()) return;
+
+  const cards = document.querySelectorAll('[data-job-id]');
+  if (!cards.length) return;
+
+  const cardMap = new Map();
+  cards.forEach((card) => {
+    const jobId = card.getAttribute('data-job-id');
+    if (!jobId) return;
+    cardMap.set(`jt_${jobId}`, { card, el: card });
+  });
+
+  safeStorageGet(Array.from(cardMap.keys()), (result) => {
+    cardMap.forEach(({ card, el }, storageKey) => {
+      const stored = result[storageKey];
+      if (stored) {
+        colorCard(el, stored);
+        return;
+      }
+      const domStatus = getCardStatus(card);
+      if (domStatus === 'applied') {
+        safeStorageSet({ [storageKey]: 'applied' });
+        colorCard(el, 'applied');
+      } else if (domStatus === 'external') {
+        colorCard(el, 'external');
+      } else {
+        colorCard(el, 'fresh');
+      }
+    });
+  });
+}
+
+// --------------------------------------------------
 // Main Processing — single batched storage read
 // --------------------------------------------------
 
 function processCards() {
   if (!isExtensionAlive()) return;
+
+  processHomeCards();
+  processListCards();
 
   const cards = document.querySelectorAll(
     '[componentkey^="job-card-component-ref-"]'
